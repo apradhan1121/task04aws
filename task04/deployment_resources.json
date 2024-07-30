@@ -1,3 +1,4 @@
+
 {
   "lambda-basic-execution": {
     "policy_content": {
@@ -26,7 +27,7 @@
     "resource_type": "iam_policy"
   },
   "sns_handler-role": {
-    "predefined_policies": [],
+    "predefined_policies": ["AWSLambdaSQSQueueExecutionRole"],
     "principal_service": "lambda",
     "custom_policies": [
       "lambda-basic-execution"
@@ -34,9 +35,7 @@
     "resource_type": "iam_role"
   },
   "sqs_handler-role": {
-    "predefined_policies": [
-
-    ],
+    "predefined_policies": ["AWSLambdaSQSQueueExecutionRole"],
     "principal_service": "lambda",
     "custom_policies": [
       "lambda-basic-execution"

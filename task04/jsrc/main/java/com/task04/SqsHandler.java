@@ -14,16 +14,14 @@ import java.util.Map;
 
 @LambdaHandler(lambdaName = "sqs_handler",
 		roleName = "sqs_handler-role",
-		isPublishVersion = false,  // Ensure no versioning
+		isPublishVersion = false,
+		//aliasName = "${lambdas_alias_name}",
 		logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
 @SqsTriggerEventSource(
-		targetQueue = "async_queue",
-		batchSize = 10
-)
-
+		targetQueue = "async_queue", batchSize = 10)
 @DependsOn(
-		name="async_queue",
+		name = "async_queue",
 		resourceType = ResourceType.SQS_QUEUE
 )
 public class SqsHandler implements RequestHandler<Object, Map<String, Object>> {
@@ -31,6 +29,7 @@ public class SqsHandler implements RequestHandler<Object, Map<String, Object>> {
 	public Map<String, Object> handleRequest(Object request, Context context) {
 		LambdaLogger lambdaLogger = context.getLogger();
 		lambdaLogger.log(request.toString());
+		System.out.println("Hello from lambda");
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap.put("statusCode", 200);
 		resultMap.put("body", "Hello from Lambda");
