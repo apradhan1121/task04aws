@@ -13,8 +13,14 @@
     "timeout" : 300,
     "subnet_ids" : [ ],
     "security_group_ids" : [ ],
-    "dependencies" : [ ],
-    "event_sources" : [ ],
+    "dependencies" : [ {
+      "resource_name" : "lambda_topic",
+      "resource_type" : "sns_topic"
+    } ],
+    "event_sources" : [ {
+      "resource_type" : "sns_topic_trigger",
+      "target_topic" : "lambda_topic"
+    } ],
     "env_variables" : { },
     "publish_version" : true,
     "alias" : "${lambdas_alias_name}",
