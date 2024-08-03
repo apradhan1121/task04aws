@@ -44,24 +44,21 @@
     "resource_type": "iam_role"
   },
 
-    "Configuration": {
-      "resource_type": "dynamodb_table",
-      "hash_key_name": "Id",
-      "hash_key_type": "N",
-      "sort_key_name": "Category",
-      "sort_key_type": "S",
-      "read_capacity": 1,
-      "write_capacity": 1,
-      "global_indexes": [],
-      "autoscaling": [],
-      "stream_view_type": "NEW_AND_OLD_IMAGES"
-    },
+  "Configuration": {
+    "resource_type": "dynamodb_table",
+    "hash_key_name": "key",
+    "hash_key_type": "N",
+    "read_capacity": 1,
+    "write_capacity": 1,
+    "global_indexes": [],
+    "autoscaling": [],
+    "stream_view_type": "NEW_AND_OLD_IMAGES"
+  },
+
   "Audit": {
     "resource_type": "dynamodb_table",
     "hash_key_name": "Id",
     "hash_key_type": "S",
-    "sort_key_name": "Category",
-    "sort_key_type": "S",
     "read_capacity": 1,
     "write_capacity": 1,
     "global_indexes": [],
