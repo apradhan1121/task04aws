@@ -4,9 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6b389c8e-9e4b-4d0d-b62a-96db5db1f719" name="Changes" comment="">
+    <list default="true" id="65fccdc4-86ef-40aa-bbd0-77230f3040f6" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../task03/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../task03/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployment_resources.json" beforeDir="false" afterPath="$PROJECT_DIR$/deployment_resources.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jsrc/main/java/com/task05/ApiHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/jsrc/main/java/com/task05/ApiHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/task05/ApiHandler$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/task05/ApiHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/task05/ApiHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/deployment_resources.json" beforeDir="false" afterPath="$PROJECT_DIR$/target/deployment_resources.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/original-task05-1.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/original-task05-1.0.0.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/task05-1.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/task05-1.0.0.jar" afterDir="false" />
     </list>
@@ -19,10 +27,9 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
   "associatedIndex": 2
 }]]></component>
-  <component name="ProjectId" id="2jxm3gCaQJTLtKHZfBz9QI24l0U" />
+  <component name="ProjectId" id="2k5Ewpja03S3fNsvo4Ptmz6hK24" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -32,6 +39,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/abhijit_pradhan/Desktop/EPAM/AWS_Sandbox/task06",
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2"
@@ -40,11 +48,11 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="6b389c8e-9e4b-4d0d-b62a-96db5db1f719" name="Changes" comment="" />
-      <created>1722336907556</created>
+      <changelist id="65fccdc4-86ef-40aa-bbd0-77230f3040f6" name="Changes" comment="" />
+      <created>1722565278687</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1722336907556</updated>
+      <updated>1722565278687</updated>
     </task>
     <servers />
   </component>
