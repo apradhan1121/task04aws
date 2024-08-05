@@ -1,118 +1,108 @@
 package com.task06;
 
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.events.DynamodbEvent;
 import com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue;
-import com.amazonaws.services.lambda.runtime.events.models.dynamodb.OperationType;
-import com.amazonaws.services.lambda.runtime.events.models.dynamodb.StreamRecord;
 import com.syndicate.deployment.annotations.environment.EnvironmentVariable;
 import com.syndicate.deployment.annotations.environment.EnvironmentVariables;
 import com.syndicate.deployment.annotations.events.DynamoDbTriggerEventSource;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.model.RetentionSetting;
-import com.amazonaws.services.dynamodbv2.model.Record;
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.DynamodbEvent;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Table;
-import com.amazonaws.services.dynamodbv2.document.Item;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import org.joda.time.Instant;
 
 @LambdaHandler(lambdaName = "audit_producer",
 		roleName = "audit_producer-role",
 		isPublishVersion = false,
-//		aliasName = "${lambdas_alias_name}",
 		logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
-
 @DynamoDbTriggerEventSource(
 		targetTable = "Configuration",
 		batchSize = 1
 )
-
 @EnvironmentVariables(value = {
-		@EnvironmentVariable(key = "region", value = "${region}"),
-		@EnvironmentVariable(key = "table", value = "${target_table}"),
+		@EnvironmentVariable(key = "target_table", value = "${target_table}")
 })
-
 public class AuditProducer implements RequestHandler<DynamodbEvent, String> {
-	private static final String AUDIT_TABLE_NAME = System.getenv("table");
-	private final DynamoDB dynamoDB = new DynamoDB(AmazonDynamoDBClientBuilder.defaultClient());
-
+	private final AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().build();
+	private final DynamoDB dynamoDb = new DynamoDB(client);
+	private final String DYNAMODB_TABLE_NAME = System.getenv("target_table");
+	private final Table table = dynamoDb.getTable(DYNAMODB_TABLE_NAME);
 	@Override
-	public String handleRequest(DynamodbEvent dynamodbEvent, Context context) {
-		Table auditTable = dynamoDB.getTable(AUDIT_TABLE_NAME);
-		System.out.println("dynamodbEvent: " + dynamodbEvent.toString());
+	public String handleRequest(DynamodbEvent event, Context context) {
+		System.out.println("Received event: "+event);
 
-		for (DynamodbEvent.DynamodbStreamRecord record : dynamodbEvent.getRecords()) {
-			if (record == null || record.getEventName() == null) {
-				continue;
+		for(DynamodbEvent.DynamodbStreamRecord record: event.getRecords()){
+			String eventName=record.getEventName();
+			if(eventName.equals("INSERT")){
+				addDataToAuditTable(record.getDynamodb().getNewImage());
+				break;
 			}
+			else if(eventName.equals("MODIFY")){
+				modifyDataToAuditTable(record.getDynamodb().getNewImage(),record.getDynamodb().getOldImage());
 
-			System.out.println("record: " + record.toString());
-			var streamRecord = record.getDynamodb();
-			var keys = streamRecord.getKeys();
-
-			if (keys == null || !keys.containsKey("Category") || !keys.containsKey("key")) { // Changed 'Id' to 'key'
-				System.err.println("Keys 'Category' and/or 'key' are missing in the record.");
-				continue;
 			}
-
-			String category = keys.get("Category").getS();
-			String key = keys.get("key").getS(); // Changed 'Id' to 'key'
-			Instant modificationTime = Instant.now();
-			System.out.println("Category: " + category + ", key: " + key + ", modificationTime: " + modificationTime.toString());
-
-			if (record.getEventName().equals("INSERT")) {
-				if (streamRecord.getNewImage() != null) {
-					String newCategory = streamRecord.getNewImage().get("Category").getS();
-					String newKey = streamRecord.getNewImage().get("key").getS(); // Changed 'Id' to 'key'
-
-					System.out.println("New category: " + newCategory + ", new key: " + newKey);
-
-					Item newItem = new Item()
-							.withPrimaryKey("key", UUID.randomUUID().toString(), "Category", category) // Updated primary key names
-							.withString("itemKey", category)
-							.withString("modificationTime", modificationTime.toString())
-							.withMap("newValue", Map.of("key", category, "value", newKey)); // Changed 'Id' to 'key'
-
-
-					System.out.println("Trying to put new item in Audit table: " + newItem.toString());
-
-					auditTable.putItem(newItem);
-				} else {
-					System.err.println("NewImage is null.");
-				}
-			} else if (record.getEventName().equals("MODIFY")) {
-				if (streamRecord.getOldImage() != null && streamRecord.getNewImage() != null) {
-					String oldValue = streamRecord.getOldImage().get("value").getS();
-					String newValue = streamRecord.getNewImage().get("value").getS();
-					System.out.println("Old value: " + oldValue + ", new value: " + newValue);
-
-					Item modifiedItem = new Item()
-							.withPrimaryKey("key", UUID.randomUUID().toString(), "Category", category) // Updated primary key names
-							.withString("itemKey", category)
-							.withString("modificationTime", modificationTime.toString())
-							.withString("updatedAttribute", "value")
-							.withString("oldValue", oldValue) // Changed to String
-							.withString("newValue", newValue); // Changed to String
-
-
-					System.out.println("Trying to put modified item in Audit table: " + modifiedItem.toString());
-
-					auditTable.putItem(modifiedItem);
-				} else {
-					System.err.println("OldImage or NewImage is null.");
-				}
+			else{
+				break;
 			}
 		}
+		return "";
+	}
 
-		return "Processed " + dynamodbEvent.getRecords().size() + " records.";
+	private void modifyDataToAuditTable(Map<String, AttributeValue> newImage, Map<String, AttributeValue> oldImage) {
+		System.out.println("New Image: "+newImage);
+		System.out.println("Old Image: "+oldImage);
+		String key = newImage.get("key").getS();
+		int oldValue = Integer.parseInt(oldImage.get("value").getN());
+		int newValue = Integer.parseInt(newImage.get("value").getN());
+		System.out.println("Old Value: "+oldValue);
+		System.out.println("New Value: "+newValue);
+
+		if(newValue!=oldValue){
+			Item updateAuditItem= new Item()
+					.withPrimaryKey("id",UUID.randomUUID().toString())
+					.withString("itemKey",key)
+					.withString("modificationTime",DateTimeFormatter.ISO_INSTANT
+							.format(Instant.now().atOffset(ZoneOffset.UTC)))
+					.withString("updatedAttribute","value")
+					.withInt("oldValue",oldValue)
+					.withInt("newValue",newValue);
+
+			System.out.println("Update Audit Item: "+updateAuditItem);
+			table.putItem(updateAuditItem);
+		}
+	}
+
+	private void addDataToAuditTable(Map<String, AttributeValue> newImage) {
+		System.out.println("New Image: "+newImage);
+
+		String key=newImage.get("key").getS();
+		int value=Integer.parseInt(newImage.get("value").getN());
+
+		Map<String,Object> newValue=new HashMap<>();
+		newValue.put("key",key);
+		newValue.put("value", value);
+
+		System.out.println("New Value: "+newValue);
+		Item auditItem=new Item()
+				.withPrimaryKey("id",UUID.randomUUID().toString())
+				.withString("itemKey",key)
+				.withString("modificationTime",DateTimeFormatter.ISO_INSTANT
+						.format(Instant.now().atOffset(ZoneOffset.UTC)))
+				.withMap("newValue",newValue);
+
+		System.out.println("Audit Item: "+auditItem);
+		table.putItem(auditItem);
 	}
 }

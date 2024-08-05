@@ -23,11 +23,9 @@
       "batch_size" : 1
     } ],
     "env_variables" : {
-      "region" : "${region}",
-      "table" : "${target_table}"
+      "target_table" : "${target_table}"
     },
     "publish_version" : false,
-    "alias" : "${lambdas_alias_name}",
     "logs_expiration" : "${logs_expiration}",
     "snap_start" : "None"
   }
